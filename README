@@ -1,2 +1,2 @@
 how to run container:
-docker run -t -d -p 4723:4723 -p 2251:2251 -p 54321:5432 -w /installers cicil-appium:latest
+docker run -t -d -p 4723:4723 -p 2251:2251 -p 54321:5432 -w /installers <imagename>:<tag>
