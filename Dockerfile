@@ -30,25 +30,25 @@ ENV JAVA_HOME=/usr/java/jdk1.8.0_211-amd64
 #######################################
 
 ARG ANDROID_PLATFORM="android-25"
-ARG BUILD_TOOLS="26.0.0"
+ARG BUILD_TOOLS="25.0.0"
 ENV ANDROID_PLATFORM=$ANDROID_PLATFORM
 ENV BUILD_TOOLS=$BUILD_TOOLS
 
 # download android sdk
 RUN yum -y install unzip
-#RUN wget -q https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip \
- # && unzip sdk-tools-linux-4333796.zip -d /opt/adk
+RUN wget -q https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip \
+ && unzip sdk-tools-linux-4333796.zip -d /opt/adk
 
 # TODO CHANGE THIS USING WGET ABOVE!
-RUN unzip /installers/sdk-tools-linux-4333796.zip -d /opt/adk
+# RUN unzip /installers/sdk-tools-linux-4333796.zip -d /opt/adk
 RUN yes | /opt/adk/tools/bin/sdkmanager --licenses
 
 # download android platform-tools AND accept license
-#RUN wget -q https://dl.google.com/android/repository/platform-tools-latest-linux.zip \ 
- # && unzip platform-tools-latest-linux.zip -d /opt/adk \
+RUN wget -q https://dl.google.com/android/repository/platform-tools-latest-linux.zip \ 
+  && unzip platform-tools-latest-linux.zip -d /opt/adk
 
 #TODO CHANGE THOS USING WGET ABOVE!
-RUN unzip /installers/platform-tools-latest-linux.zip -d /opt/adk
+#RUN unzip /installers/platform-tools-latest-linux.zip -d /opt/adk
 
 # set ANDROID_HOME variable
 ENV ANDROID_HOME /opt/adk
@@ -60,14 +60,15 @@ ENV ANDROID_HOME /opt/adk
 
 # install nojejs, npm
 # ARG NODE_VERSION=v8.11.3
-ARG NODE_VERSION=v12.1.0
+ARG NODE_VERSION=v12.2.0
 ENV NODE_VERSION=$NODE_VERSION
 ARG APPIUM_VERSION=1.9.1
 ENV APPIUM_VERSION=$APPIUM_VERSION
 
 # install appium
 #RUN wget -q https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz
-RUN wget -q https://nodejs.org/dist/latest/node-v12.1.0-linux-x64.tar.xz \
+#RUN wget -q https://nodejs.org/dist/latest/node-v12.1.0-linux-x64.tar.xz \
+RUN wget -q https://nodejs.org/dist/v12.2.0/node-v12.2.0-linux-x64.tar.xz \
   && tar -xJf node-${NODE_VERSION}-linux-x64.tar.xz -C /opt/ \
   && ln -s /opt/node-${NODE_VERSION}-linux-x64/bin/npm /usr/bin/ \
   && ln -s /opt/node-${NODE_VERSION}-linux-x64/bin/node /usr/bin/ \
@@ -93,10 +94,10 @@ RUN /opt/adk/tools/bin/sdkmanager "emulator" "build-tools;${BUILD_TOOLS}" "platf
 ##################################
 # ESSENTIAL LIBS TO RUN EMU
 ##################################
-RUN y | yum install libX11 \
-  && y | yum install pulseaudio-libs-devel \
-  && y | yum install libGL.so.1 \
-  && y | yum install libglvnd-glx-1.0.1-0.8.git5baa1e5.el7.x86_64 
+RUN yum install -y libX11 \
+  && yum install -y pulseaudio-libs-devel \
+  && yum install -y libGL.so.1 \
+  && yum install -y libglvnd-glx-1.0.1-0.8.git5baa1e5.el7.x86_64 
 
 # example to run selenium container:
 #docker run -d -p 4444:4444 -v /dev/shm:/dev/shm selenium/standalone-chrome-debug:latest
@@ -108,3 +109,8 @@ RUN y | yum install libX11 \
 # 4723: appium default port
 # 2251: appium port with "-bp" param
 EXPOSE 4723 2251 5432
+
+
+CMD ["sh", "startup.sh"]
+# ENTRYPOINT ["/bin/bash"]
+# CMD ["/bin/appium"]
